@@ -1,0 +1,6 @@
+@DaneshkarEf_HostAddress = http://localhost:5089
+
+GET {{DaneshkarEf_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
