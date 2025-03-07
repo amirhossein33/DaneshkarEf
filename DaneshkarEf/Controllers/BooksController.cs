@@ -30,7 +30,7 @@
             {
                 var books = await _context.Books
                     .Include(b => b.Authors)
-                    .ThenInclude(ba => ba.Author)  // لود کردن اطلاعات نویسندگان
+                    .ThenInclude(ba => ba.Author)
                     .Select(b => new BookDTO
                     {
                         Id = b.Id,
@@ -80,6 +80,7 @@
 
 
 
+
             [HttpPatch("{id}")]
             public async Task<IActionResult> PatchBook(int id, [FromBody] JsonPatchDocument<Book> patchDoc)
             {
@@ -94,33 +95,21 @@
                     return NotFound();
                 }
 
-              
-                patchDoc.ApplyTo(book);
 
-             
+                patchDoc.ApplyTo(book, ModelState);
+
+
                 if (!TryValidateModel(book))
                 {
                     return BadRequest(ModelState);
                 }
 
-                try
-                {
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!BookExists(id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                await _context.SaveChangesAsync();
 
-                return NoContent();
+
+                return Ok(book);
             }
+
 
 
             [HttpPost]
@@ -159,7 +148,8 @@
                     }
                 }
 
-                return NoContent();
+                return Ok(book);
+
             }
 
 
@@ -213,7 +203,8 @@
                 _context.Books.Remove(book);
                 await _context.SaveChangesAsync();
 
-                return NoContent();
+                return Ok(book);
+
             }
 
 
